@@ -166,6 +166,35 @@ curl -X POST http://localhost:8545 \
   -d '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}'
 ```
 
+## Validator Management
+
+### Add Validators Dynamically
+
+Add new validators to a running network using block header voting:
+
+```bash
+# Generate new validator keys
+./tools/generate-validator-key.sh
+
+# Vote to add validator (from each existing validator)
+./tools/vote-add-validator.sh 0xNEW_VALIDATOR_ADDRESS
+
+# Check voting status
+./tools/check-pending-votes.sh
+
+# Get current validators
+./tools/get-validators.sh
+```
+
+See [docs/VALIDATOR_MANAGEMENT.md](docs/VALIDATOR_MANAGEMENT.md) for detailed instructions.
+
+### Remove Validators
+
+```bash
+# Vote to remove validator
+./tools/vote-remove-validator.sh 0xVALIDATOR_ADDRESS
+```
+
 ## Maintenance
 
 ### Reset Chain Data
