@@ -16,7 +16,7 @@ This repository provides a complete setup for deploying a private Ethereum netwo
 
 ### Prerequisites
 
-- [Hyperledger Besu](https://besu.hyperledger.org/stable/public-networks/get-started/install) (latest version)
+- [Hyperledger Besu](https://besu.hyperledger.org/) (latest version)
 - Java 17 or higher
 - curl and jq for verification scripts
 
@@ -134,8 +134,6 @@ cd ../scripts/
 ./deploy.sh
 ```
 
-See [cloud/README.md](cloud/README.md) for detailed instructions.
-
 ## Monitoring
 
 ### Check Network Health
@@ -206,9 +204,8 @@ This configuration is designed for development and testing environments.
 ## Documentation
 
 - [Hyperledger Besu Documentation](https://besu.hyperledger.org/)
-- [QBFT Consensus](https://besu.hyperledger.org/stable/private-networks/concepts/poa)
-- [JSON-RPC API Reference](https://besu.hyperledger.org/stable/public-networks/reference/api)
-- [Private Network Configuration](https://besu.hyperledger.org/stable/private-networks)
+- [Private Networks Guide](https://besu.hyperledger.org/private-networks)
+- [Public Networks Guide](https://besu.hyperledger.org/public-networks)
 
 ## License
 
