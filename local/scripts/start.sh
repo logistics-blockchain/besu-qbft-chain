@@ -181,7 +181,7 @@ BLOCK_NUMBER=$(curl -s -X POST http://localhost:8545 \
 if [ -n "$BLOCK_NUMBER" ] && [ "$BLOCK_NUMBER" != "0x0" ]; then
     echo "Network is producing blocks: $BLOCK_NUMBER"
 else
-    echo "Network starting... Check logs if blocks don't appear soon."
+    echo "Network starting... Check logs if blocks do not appear soon."
 fi
 
 echo ""

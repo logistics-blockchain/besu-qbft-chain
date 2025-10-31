@@ -96,13 +96,13 @@ besu --data-path="$VALIDATOR_DIR" public-key export-address --to="$VALIDATOR_DIR
 VALIDATOR_ADDRESS=$(cat "$VALIDATOR_DIR/address.txt")
 
 echo ""
-echo "✓ Validator keypair generated!"
+echo "[OK] Validator keypair generated"
 echo ""
 echo "Your validator address: $VALIDATOR_ADDRESS"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "=============================================="
 echo "IMPORTANT - Next Steps:"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "=============================================="
 echo ""
 echo "1. Send this address to the network operators:"
 echo "   $VALIDATOR_ADDRESS"
@@ -116,7 +116,7 @@ echo ""
 echo "4. Monitor your validator:"
 echo "   ./check-validator-status.sh"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "=============================================="
 echo ""
 
 # Save address to config
@@ -183,7 +183,7 @@ VALIDATOR_PID=$!
 echo $VALIDATOR_PID > validator.pid
 
 echo ""
-echo "✓ Validator started!"
+echo "[OK] Validator started"
 echo "  PID: $VALIDATOR_PID"
 echo "  RPC: http://localhost:8545"
 echo "  Logs: tail -f validator.log"
@@ -221,7 +221,7 @@ if ps -p $PID > /dev/null 2>&1; then
     fi
 
     rm validator.pid
-    echo "✓ Validator stopped"
+    echo "[OK] Validator stopped"
 else
     echo "Validator not running (stale PID file)"
     rm validator.pid
@@ -246,12 +246,12 @@ echo ""
 if [ -f "validator.pid" ]; then
     PID=$(cat validator.pid)
     if ps -p $PID > /dev/null 2>&1; then
-        echo "✓ Process: Running (PID: $PID)"
+        echo "[OK] Process: Running (PID: $PID)"
     else
-        echo "✗ Process: Not running (stale PID)"
+        echo "[ERROR] Process: Not running (stale PID)"
     fi
 else
-    echo "✗ Process: Not running"
+    echo "[ERROR] Process: Not running"
 fi
 
 echo ""
@@ -259,9 +259,9 @@ echo ""
 # Check RPC connectivity
 echo "Checking RPC connection..."
 if curl -s -f "$RPC_ENDPOINT" > /dev/null 2>&1; then
-    echo "✓ RPC: Connected"
+    echo "[OK] RPC: Connected"
 else
-    echo "✗ RPC: Not accessible"
+    echo "[ERROR] RPC: Not accessible"
     exit 1
 fi
 
@@ -288,7 +288,7 @@ PEER_DEC=$((16#${PEER_HEX#0x}))
 echo "Connected Peers: $PEER_DEC"
 
 if [ $PEER_DEC -eq 0 ]; then
-    echo "⚠ Warning: No peers connected"
+    echo "[WARNING] No peers connected"
 fi
 
 echo ""
@@ -304,10 +304,10 @@ if [ -f "validator-address.txt" ]; then
     VALIDATORS=$(echo "$VALIDATORS_RESPONSE" | jq -r '.result[]')
 
     if echo "$VALIDATORS" | grep -qi "$VALIDATOR_ADDRESS"; then
-        echo "✓ Status: ACTIVE VALIDATOR"
+        echo "[OK] Status: ACTIVE VALIDATOR"
         echo "  Address: $VALIDATOR_ADDRESS"
     else
-        echo "⚠ Status: NOT IN VALIDATOR SET"
+        echo "[INFO] Status: NOT IN VALIDATOR SET"
         echo "  Address: $VALIDATOR_ADDRESS"
         echo "  Waiting for network operators to vote you in..."
     fi
@@ -490,14 +490,14 @@ Contact network operators for assistance with:
 - Technical issues
 EOF
 
-echo "✓ Validator package created: $PACKAGE_DIR"
+echo "[OK] Validator package created: $PACKAGE_DIR"
 echo ""
 echo "Package contents:"
 ls -lh "$PACKAGE_DIR"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "=============================================="
 echo "Next Steps:"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "=============================================="
 echo ""
 echo "1. Distribute package to validator:"
 echo "   tar -czf $PACKAGE_DIR.tar.gz $PACKAGE_DIR"
@@ -516,4 +516,4 @@ echo ""
 echo "5. Validator starts their node:"
 echo "   ./start-validator.sh"
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "=============================================="

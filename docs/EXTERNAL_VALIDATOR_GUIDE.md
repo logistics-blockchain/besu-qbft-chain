@@ -393,7 +393,7 @@ If validator loses keys:
 
 1. Generate new keypair
 2. Request voting for new address
-3. Old validator automatically excluded (can't sign)
+3. Old validator automatically excluded (cannot sign)
 4. Vote to remove old address (cleanup)
 
 ## Monitoring and Metrics

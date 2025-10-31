@@ -35,13 +35,13 @@ echo ""
 
 # Check if successful
 if echo "$RESPONSE" | grep -q '"result":true'; then
-    echo "✓ Vote submitted successfully!"
+    echo "[OK] Vote submitted successfully"
     echo ""
     echo "The proposal will be included in blocks produced by this validator."
     echo "Once >50% of validators have voted, the validator will be removed."
     echo ""
     echo "Check pending votes: ./tools/check-pending-votes.sh"
 else
-    echo "✗ Vote failed. Check the response above for errors."
+    echo "[ERROR] Vote failed. Check the response above for errors."
     exit 1
 fi
