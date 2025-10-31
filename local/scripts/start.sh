@@ -87,6 +87,7 @@ besu --genesis-file=besu-network/genesis.json \
   --p2p-host=127.0.0.1 \
   --p2p-port=30304 \
   --rpc-http-enabled \
+  --rpc-http-api=ETH,NET,QBFT \
   --rpc-http-host=0.0.0.0 \
   --rpc-http-port=8547 \
   --host-allowlist="*" \
@@ -106,6 +107,7 @@ besu --genesis-file=besu-network/genesis.json \
   --p2p-host=127.0.0.1 \
   --p2p-port=30305 \
   --rpc-http-enabled \
+  --rpc-http-api=ETH,NET,QBFT \
   --rpc-http-host=0.0.0.0 \
   --rpc-http-port=8548 \
   --host-allowlist="*" \
@@ -125,6 +127,7 @@ besu --genesis-file=besu-network/genesis.json \
   --p2p-host=127.0.0.1 \
   --p2p-port=30306 \
   --rpc-http-enabled \
+  --rpc-http-api=ETH,NET,QBFT \
   --rpc-http-host=0.0.0.0 \
   --rpc-http-port=8549 \
   --host-allowlist="*" \
