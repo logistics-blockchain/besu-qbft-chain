@@ -32,7 +32,7 @@ brew install hyperledger/besu/besu
 # Generate validator keys and genesis file
 ./local/scripts/setup.sh
 
-# Start 4-node QBFT network
+# Start QBFT network
 ./local/scripts/start.sh
 
 # Verify network is running
@@ -42,7 +42,7 @@ brew install hyperledger/besu/besu
 ./tools/health-check.sh
 ```
 
-The network will be available at `http://localhost:8545`
+The primary RPC endpoint will be available at `http://localhost:8545`
 
 ### Stop Network
 
@@ -50,34 +50,19 @@ The network will be available at `http://localhost:8545`
 ./local/scripts/stop.sh
 ```
 
-## Network Configuration
-
-| Parameter | Value |
-|-----------|-------|
-| Chain ID | 10001 |
-| Consensus | QBFT |
-| Validators | 4 |
-| Block Time | 2 seconds |
-| Gas Price | 0 |
-
-### RPC Endpoints
-
-- **Node 0** (main): `http://localhost:8545` (HTTP), `ws://localhost:8546` (WebSocket)
-- **Node 1**: `http://localhost:8547`
-- **Node 2**: `http://localhost:8548`
-- **Node 3**: `http://localhost:8549`
-
 ## Usage
 
 ### Connect with Web3 Libraries
+
+Network configuration details (chain ID, RPC endpoints) are displayed when starting the network and can be found in the configuration files.
 
 **Viem:**
 ```typescript
 import { createPublicClient, http, defineChain } from 'viem';
 
-const besuLocal = defineChain({
-  id: 10001,
-  name: 'Besu Local',
+const besuChain = defineChain({
+  id: /* see genesis.json */,
+  name: 'Besu QBFT',
   nativeCurrency: { decimals: 18, name: 'Ether', symbol: 'ETH' },
   rpcUrls: {
     default: { http: ['http://127.0.0.1:8545'] }
@@ -85,7 +70,7 @@ const besuLocal = defineChain({
 });
 
 const client = createPublicClient({
-  chain: besuLocal,
+  chain: besuChain,
   transport: http()
 });
 ```
@@ -93,9 +78,9 @@ const client = createPublicClient({
 **Hardhat:**
 ```typescript
 networks: {
-  besuLocal: {
+  besu: {
     url: "http://127.0.0.1:8545",
-    chainId: 10001,
+    chainId: /* see genesis.json */,
     gasPrice: 0
   }
 }
@@ -105,7 +90,7 @@ See [local/examples/](local/examples/) for complete integration examples.
 
 ### Important: Zero Gas Transactions
 
-This network requires explicitly setting `gasPrice: 0` in all transactions:
+This network is configured with zero base fee. Explicitly set `gasPrice: 0` in all transactions:
 
 ```typescript
 await walletClient.sendTransaction({
@@ -163,7 +148,7 @@ See [cloud/README.md](cloud/README.md) for detailed instructions.
 
 ```bash
 # Follow node logs
-tail -f besu-data/node0.log
+tail -f besu-data/node*.log
 
 # Search for errors
 grep ERROR besu-data/node*.log
@@ -217,7 +202,6 @@ This configuration is designed for development and testing environments.
 - Implement onchain permissioning
 - Configure proper firewall rules
 - Use monitoring and alerting systems
-- Increase validator count for higher fault tolerance
 
 ## Documentation
 
