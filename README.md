@@ -188,6 +188,22 @@ Add new validators to a running network using block header voting:
 
 See [docs/VALIDATOR_MANAGEMENT.md](docs/VALIDATOR_MANAGEMENT.md) for detailed instructions.
 
+### Onboard External Validators
+
+Generate a complete package for external validators to join the network:
+
+```bash
+# Network operators: Generate validator package
+./tools/generate-validator-package.sh
+
+# Distribute package to validator candidate
+# Validator runs: ./setup-validator.sh
+# Validator sends their address back
+# Network operators vote to approve
+```
+
+See [docs/EXTERNAL_VALIDATOR_GUIDE.md](docs/EXTERNAL_VALIDATOR_GUIDE.md) for complete onboarding workflow.
+
 ### Remove Validators
 
 ```bash
