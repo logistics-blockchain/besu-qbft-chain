@@ -1,10 +1,10 @@
 # Besu QBFT Chain
 
-Private Ethereum network implementation using [Hyperledger Besu](https://besu.hyperledger.org/) with QBFT consensus.
+Private EVM network implementation using [Hyperledger Besu](https://besu.hyperledger.org/) with QBFT consensus.
 
 ## Overview
 
-This repository provides a complete setup for deploying a private Ethereum network with:
+This repository provides a complete setup for deploying a private EVM network with:
 
 - **QBFT Consensus** - Byzantine fault tolerant consensus mechanism
 - **Smart Contract Validator Management** - On-chain governance with multi-signature approval for new validators
