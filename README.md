@@ -7,8 +7,10 @@ Private Ethereum network implementation using [Hyperledger Besu](https://besu.hy
 This repository provides a complete setup for deploying a private Ethereum network with:
 
 - **QBFT Consensus** - Byzantine fault tolerant consensus mechanism
+- **Smart Contract Validator Management** - On-chain governance with multi-signature approval
 - **Zero Gas Configuration** - Free transactions for all network participants
 - **Full EVM Compatibility** - Support for latest Solidity versions and EVM features
+- **Progressive Decentralization** - Start with single admin, scale to multi-sig governance
 - **Local Development** - Quick setup for testing and development
 - **Cloud Deployment** - Production-ready infrastructure configurations
 
@@ -104,15 +106,33 @@ await walletClient.sendTransaction({
 
 ```
 besu-qbft-chain/
+├── contracts/          Smart contracts
+│   └── DynamicMultiSigValidatorManager.sol
+├── test/               Contract unit tests
+│   └── DynamicMultiSigValidatorManager.test.js
 ├── local/              Local development setup
 │   ├── config/         Network generation configuration
 │   ├── scripts/        Setup, start, stop, verify scripts
+│   │   ├── generate-2validator-genesis.js
+│   │   ├── generate-4validator-genesis.js
+│   │   ├── extract-bytecode.js
+│   │   ├── start-contract-network.sh
+│   │   └── stop-contract-network.sh
 │   └── examples/       Client integration examples
 ├── cloud/              Cloud deployment
 │   ├── terraform/      Infrastructure as code
 │   ├── docker/         Container configurations
 │   └── scripts/        Deployment automation
-└── tools/              Utility scripts
+├── tools/              Utility scripts
+│   ├── generate-validator-key.sh
+│   ├── health-check.sh
+│   ├── reset-chain.sh
+│   ├── query-validators.js
+│   └── test-validator-approval.js
+├── docs/               Documentation
+│   └── CONTRACT_VALIDATOR_MANAGEMENT.md
+├── package.json        Node.js dependencies and scripts
+└── hardhat.config.js   Hardhat configuration for testing
 ```
 
 ## Cloud Deployment
@@ -168,48 +188,33 @@ curl -X POST http://localhost:8545 \
 
 ## Validator Management
 
-### Add Validators Dynamically
-
-Add new validators to a running network using block header voting:
+Validators are managed via an on-chain smart contract with multi-signature governance:
 
 ```bash
-# Generate new validator keys
-./tools/generate-validator-key.sh
+# Compile contract and extract bytecode
+npm run compile
 
-# Vote to add validator (from each existing validator)
-./tools/vote-add-validator.sh 0xNEW_VALIDATOR_ADDRESS
+# Generate genesis with contract (2 validators)
+npm run generate:genesis-2
 
-# Check voting status
-./tools/check-pending-votes.sh
+# Start contract-managed network
+./local/scripts/start-contract-network.sh
 
-# Get current validators
-./tools/get-validators.sh
+# Query current validators from contract
+node tools/query-validators.js
+
+# Test validator approval workflow
+node tools/test-validator-approval.js
 ```
 
-See [docs/VALIDATOR_MANAGEMENT.md](docs/VALIDATOR_MANAGEMENT.md) for detailed instructions.
+**Features:**
+- Multi-signature approval (dynamic threshold)
+- On-chain audit trail of all validator changes
+- Progressive decentralization (1 → N admins)
+- Application submission with metadata
+- Proposal-based approval workflow
 
-### Onboard External Validators
-
-Generate a complete package for external validators to join the network:
-
-```bash
-# Network operators: Generate validator package
-./tools/generate-validator-package.sh
-
-# Distribute package to validator candidate
-# Validator runs: ./setup-validator.sh
-# Validator sends their address back
-# Network operators vote to approve
-```
-
-See [docs/EXTERNAL_VALIDATOR_GUIDE.md](docs/EXTERNAL_VALIDATOR_GUIDE.md) for complete onboarding workflow.
-
-### Remove Validators
-
-```bash
-# Vote to remove validator
-./tools/vote-remove-validator.sh 0xVALIDATOR_ADDRESS
-```
+See [docs/CONTRACT_VALIDATOR_MANAGEMENT.md](docs/CONTRACT_VALIDATOR_MANAGEMENT.md) for detailed documentation.
 
 ## Maintenance
 
@@ -227,6 +232,49 @@ Remove all blockchain data while preserving validator keys:
 brew upgrade hyperledger/besu/besu
 ./local/scripts/stop.sh
 ./local/scripts/start.sh
+```
+
+## Testing
+
+### Unit Tests
+
+Test the validator management contract:
+
+```bash
+# Install dependencies
+npm install
+
+# Run unit tests
+npm test
+
+# Run unit tests with coverage
+npm run test:coverage
+```
+
+**Test Coverage:**
+- 36 comprehensive tests
+- Admin management (add/remove, threshold calculation)
+- Validator proposals (create/sign/execute)
+- Access control and permissions
+- Progressive decentralization (1 → 5 admins)
+
+### Integration Tests
+
+Test with live Besu network:
+
+```bash
+# Generate genesis and start network
+npm run generate:genesis-2
+./local/scripts/start-contract-network.sh
+
+# Query validators from contract
+node tools/query-validators.js
+
+# Test approval workflow
+node tools/test-validator-approval.js
+
+# Stop network
+./local/scripts/stop-contract-network.sh
 ```
 
 ## Security Considerations

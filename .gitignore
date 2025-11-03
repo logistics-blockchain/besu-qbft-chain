@@ -52,3 +52,12 @@ coverage/
 *.tmp
 temp/
 tmp/
+node_modules/
+cache/
+artifacts/
+deployedBytecode.txt
+abi.json
+*.log
+besu-data/
+besu-network/node*/
+besu-network/genesis.json

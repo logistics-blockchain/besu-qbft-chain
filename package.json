@@ -1,0 +1,20 @@
+{
+  "name": "besu-qbft-chain",
+  "version": "1.0.0",
+  "description": "Private Ethereum network with QBFT consensus and smart contract-based validator management",
+  "scripts": {
+    "test": "hardhat test",
+    "test:unit": "hardhat test test/*.test.js",
+    "compile": "hardhat compile",
+    "extract": "hardhat compile && node local/scripts/extract-bytecode.js",
+    "generate:genesis-2": "npm run extract && node local/scripts/generate-2validator-genesis.js",
+    "generate:genesis-4": "npm run extract && node local/scripts/generate-4validator-genesis.js"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.0"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0"
+  }
+}
