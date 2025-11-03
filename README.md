@@ -7,12 +7,10 @@ Private Ethereum network implementation using [Hyperledger Besu](https://besu.hy
 This repository provides a complete setup for deploying a private Ethereum network with:
 
 - **QBFT Consensus** - Byzantine fault tolerant consensus mechanism
-- **Smart Contract Validator Management** - On-chain governance with multi-signature approval
+- **Smart Contract Validator Management** - On-chain governance with multi-signature approval for new validators
+- **Progressive Decentralization** - Start with single admin, scale to multi-sig governance
 - **Zero Gas Configuration** - Free transactions for all network participants
 - **Full EVM Compatibility** - Support for latest Solidity versions and EVM features
-- **Progressive Decentralization** - Start with single admin, scale to multi-sig governance
-- **Local Development** - Quick setup for testing and development
-- **Cloud Deployment** - Production-ready infrastructure configurations
 
 ## Quick Start
 
