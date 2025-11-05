@@ -11,6 +11,9 @@ This repository provides a complete setup for deploying a private EVM network wi
 - **Progressive Decentralization** - Start with single admin, scale to multi-sig governance
 - **Zero Gas Configuration** - Free transactions for all network participants
 - **Full EVM Compatibility** - Support for latest Solidity versions and EVM features
+- **Cancun Fork Support** - Includes London, Shanghai, and Cancun upgrades from genesis
+- **Local Development** - Quick setup for testing and development
+- **Cloud Deployment** - Production-ready infrastructure configurations
 
 ## Quick Start
 
@@ -25,6 +28,17 @@ This repository provides a complete setup for deploying a private EVM network wi
 brew tap hyperledger/besu
 brew install hyperledger/besu/besu
 ```
+
+### Ethereum Fork Compatibility
+
+This network includes the following Ethereum upgrades activated from genesis:
+
+- **Berlin** - EIP-2565, EIP-2929, EIP-2718, EIP-2930
+- **London** - EIP-1559 base fee mechanism (configured for zero gas)
+- **Shanghai** - EVM improvements and validator withdrawals support
+- **Cancun** - EIP-4844 (blob transactions), EIP-1153 (transient storage), EIP-5656 (MCOPY), EIP-6780 (SELFDESTRUCT changes), EIP-7516 (BLOBBASEFEE opcode)
+
+All upgrades are configured in the genesis file with activation at block 0 or timestamp 0. This ensures full compatibility with modern Ethereum tooling and smart contracts. Requires Hyperledger Besu 24.1.2 or later.
 
 ### Local Development Setup
 

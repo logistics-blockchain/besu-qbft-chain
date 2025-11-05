@@ -6,10 +6,10 @@ const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000009999';
 const DEPLOYED_BYTECODE = fs.readFileSync('deployedBytecode.txt', 'utf8').trim();
 
 const validatorAddresses = [
-  '0xf176465f83bfa22f1057e4353b5a100a1c198507',
-  '0xef832eca2439987697d43917f9d3d0dd1e9410b7',
-  '0x97d2a16f323947b757a4de762e460e6bbace1adc',
-  '0x82085d3051fc8c0c90c7908c92382072c8681b2c'
+  '0x9940632656841559a5e1c3a9eb749b560a2af771',
+  '0x67821f32b9b2521b7a7783f520488d5a31291706',
+  '0x5cec6a25862c772e28d1016e71933a92ac336b30',
+  '0x235c74be7644025d75bbc434d3618498b365d339'
 ];
 
 const adminAddress = validatorAddresses[0];
@@ -70,6 +70,9 @@ const genesis = {
   config: {
     chainId: 10001,
     berlinBlock: 0,
+    londonBlock: 0,
+    shanghaiTime: 0,
+    cancunTime: 0,
     qbft: {
       blockperiodseconds: 5,
       epochlength: 30000,

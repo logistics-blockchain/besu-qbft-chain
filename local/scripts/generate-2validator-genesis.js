@@ -77,6 +77,9 @@ const genesis = {
   config: {
     chainId: 10001,
     berlinBlock: 0,
+    londonBlock: 0,
+    shanghaiTime: 0,
+    cancunTime: 0,
     qbft: {
       blockperiodseconds: 5,
       epochlength: 30000,
