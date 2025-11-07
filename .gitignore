@@ -1,39 +1,49 @@
-# Dependencies
+# Node
 node_modules/
-**/node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
 
-# Build artifacts
-artifacts/
-cache/
-dist/
-build/
-*.tsbuildinfo
-
-# Blockchain runtime data
-besu-chain/local/data/
-besu-chain/local/*.log
-besu-chain/cloud/data/
-**/besu-data/
-*.log
-
-# Deployment artifacts
-deployment-info*.json
-smart-contracts/deployments/*/solcInputs/
-
-# Environment and secrets
+# Environment
 .env
 .env.local
-.env.production
+*.local
 
-# Private keys (NEVER commit!)
-**/keys/**/*.key
-**/keystore/
-**/*-private-key*
+# Keys
+**/*.key
+**/node.key
+**/validator-addresses.json
 
-# IDE and project-specific
+# Besu data
+**/besu-data/
+**/data/
+**/.besu/
+
+# Generated config files
+deployment/local/static-nodes.json
+genesis.json
+
+# Runtime
+.runtime/
+
+# Build artifacts
+dist/
+build/
+cache/
+artifacts/contracts/
+artifacts/build-info/
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/tfplan
+terraform/terraform.tfvars
+
+# IDE
 .vscode/
 .idea/
-.claude/
 *.swp
 *.swo
 *~
@@ -41,23 +51,7 @@ smart-contracts/deployments/*/solcInputs/
 # OS
 .DS_Store
 Thumbs.db
-.AppleDouble
-.LSOverride
 
-# Testing
-coverage/
-.nyc_output/
-
-# Temporary files
-*.tmp
-temp/
-tmp/
-node_modules/
-cache/
-artifacts/
-deployedBytecode.txt
-abi.json
+# Logs
 *.log
-besu-data/
-besu-network/node*/
-besu-network/genesis.json
+logs/

@@ -1,20 +1,27 @@
 {
-  "name": "besu-qbft-chain",
+  "name": "besuchain",
   "version": "1.0.0",
-  "description": "Private Ethereum network with QBFT consensus and smart contract-based validator management",
+  "description": "Private QBFT network deployment",
+  "private": true,
   "scripts": {
-    "test": "hardhat test",
-    "test:unit": "hardhat test test/*.test.js",
-    "compile": "hardhat compile",
-    "extract": "hardhat compile && node local/scripts/extract-bytecode.js",
-    "generate:genesis-2": "npm run extract && node local/scripts/generate-2validator-genesis.js",
-    "generate:genesis-4": "npm run extract && node local/scripts/generate-4validator-genesis.js"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.0"
+    "keys:generate": "./scripts/1-generate-keys.sh",
+    "contracts:compile": "tsx scripts/2-compile-contracts.ts",
+    "storage:calculate": "tsx scripts/3-calculate-storage.ts",
+    "genesis:generate": "tsx scripts/4-generate-genesis.ts",
+    "deploy": "./scripts/5-deploy.sh",
+    "start": "./scripts/6-start.sh",
+    "peers": "./scripts/7-configure-peers.sh",
+    "verify": "./scripts/8-verify.sh",
+    "stop": "./scripts/9-stop.sh",
+    "deploy:all": "npm run keys:generate && npm run contracts:compile && npm run storage:calculate && npm run genesis:generate"
   },
   "dependencies": {
-    "ethers": "^6.13.0"
+    "viem": "^2.37.12",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "typescript": "^5.9.0",
+    "@types/node": "^22.0.0"
   }
 }

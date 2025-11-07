@@ -1,0 +1,28 @@
+{
+  "nodes": {
+    "validator1": {
+      "type": "validator",
+      "location": "local",
+      "port": 8545,
+      "host": "your-public-ip-or-domain"
+    },
+    "validator2": {
+      "type": "validator",
+      "location": "remote",
+      "host": "your-public-ip-or-domain",
+      "user": "ubuntu"
+    },
+    "validator3": {
+      "type": "validator",
+      "location": "remote",
+      "host": "your-public-ip-or-domain",
+      "user": "ubuntu"
+    },
+    "rpc1": {
+      "type": "rpc",
+      "location": "local",
+      "port": 8548,
+      "host": "your-public-ip-or-domain"
+    }
+  }
+}
