@@ -1,8 +1,0 @@
-{
-  "nodes": {
-    "validator1": {"type": "validator", "location": "local", "port": 8545},
-    "validator2": {"type": "validator", "location": "local", "port": 8546},
-    "validator3": {"type": "validator", "location": "local", "port": 8547},
-    "rpc1": {"type": "rpc", "location": "local", "port": 8548}
-  }
-}
