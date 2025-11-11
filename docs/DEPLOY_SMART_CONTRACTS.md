@@ -4,7 +4,7 @@ Guide for deploying smart contracts to a running blockchain network.
 
 ## Network Configuration
 
-- **Chain ID**: 10001
+- **Chain ID**: 10002
 - **RPC URL**: `http://NODE_IP:8545` (use any validator or RPC node)
 - **Gas Price**: 0 (private network)
 - **EVM Version**: Berlin
@@ -36,7 +36,7 @@ module.exports = {
   networks: {
     besuchain: {
       url: "http://NODE_IP:8545",
-      chainId: 10001,
+      chainId: 10002,
       accounts: ["0xYOUR_PRIVATE_KEY"],
       gasPrice: 0,
       gas: 5000000
@@ -107,7 +107,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { defineChain } from 'viem';
 
 const besuchain = defineChain({
-  id: 10001,
+  id: 10002,
   name: 'BesuChain',
   network: 'besuchain',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
@@ -173,10 +173,18 @@ cast send CONTRACT_ADDRESS \
   123 \
   --private-key 0xYOUR_PRIVATE_KEY \
   --rpc-url http://NODE_IP:8545 \
-  --gas-price 0
+  --gas-price 0 \
+  --legacy
 ```
 
 ## Important Considerations
+
+**Transaction Type (Cast Commands):**
+- Berlin fork does NOT support EIP-1559 (Type 2) transactions
+- Cast defaults to EIP-1559 for unknown networks
+- **MUST use `--legacy` flag** with all `cast send` commands
+- Without `--legacy`: "Max priority fee per gas exceeds max fee per gas" error
+- Read-only `cast call` commands do NOT need `--legacy`
 
 **Gas Price:**
 - BesuChain configured with min-gas-price=0

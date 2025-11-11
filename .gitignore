@@ -22,6 +22,7 @@ yarn-error.log
 # Generated config files
 deployment/local/static-nodes.json
 genesis.json
+nodes.json
 
 # Runtime
 .runtime/

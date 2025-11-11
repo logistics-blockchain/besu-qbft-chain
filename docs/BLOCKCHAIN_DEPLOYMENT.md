@@ -7,7 +7,7 @@ This guide covers deployment to local and remote environments.
 ## Architecture
 
 - **Consensus**: QBFT (Byzantine Fault Tolerant)
-- **Chain ID**: 10001
+- **Chain ID**: 10002
 - **Block Time**: 5 seconds
 - **Validator Contract**: DynamicMultiSigValidatorManager (multi-sig governance)
 - **EVM Version**: Berlin

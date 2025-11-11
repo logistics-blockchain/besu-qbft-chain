@@ -8,6 +8,8 @@ Guide for adding a validator node to a running blockchain network.
 - Access to existing network admin account
 - Target server meeting hardware requirements (4GB RAM, 50GB storage)
 
+**IMPORTANT:** Your genesis file must match the network's configuration exactly, including fork settings. Mismatched genesis configurations (especially fork versions like Berlin vs London vs Shanghai) will cause transaction failures and sync issues.
+
 ## Step 1: Get Genesis File
 
 Retrieve the genesis file from any existing node:
@@ -164,7 +166,8 @@ cast send 0x0000000000000000000000000000000000009999 \
   "contact@email.com" \
   --private-key NEW_NODE_PRIVATE_KEY \
   --rpc-url http://localhost:8545 \
-  --gas-price 0
+  --gas-price 0 \
+  --legacy
 ```
 
 **Admin proposes approval:**
@@ -178,7 +181,8 @@ cast send 0x0000000000000000000000000000000000009999 \
   "Approval reason" \
   --private-key ADMIN_PRIVATE_KEY \
   --rpc-url http://EXISTING_NODE:8545 \
-  --gas-price 0
+  --gas-price 0 \
+  --legacy
 ```
 
 **Other admins sign the proposal:**
@@ -191,7 +195,8 @@ cast send 0x0000000000000000000000000000000000009999 \
   PROPOSAL_ID \
   --private-key ADMIN_PRIVATE_KEY \
   --rpc-url http://EXISTING_NODE:8545 \
-  --gas-price 0
+  --gas-price 0 \
+  --legacy
 ```
 
 **Automatic execution:**
@@ -211,6 +216,23 @@ cast call 0x0000000000000000000000000000000000009999 \
 The new validator address should appear in the returned array.
 
 ## Troubleshooting
+
+**"Max priority fee per gas exceeds max fee per gas" error:**
+- **Cause:** Network runs Berlin fork (no EIP-1559), but cast defaults to EIP-1559 transactions
+- **Solution:** Add `--legacy` flag to all `cast send` commands
+- **Verification:** Ensure your node's genesis matches the network exactly
+- Check genesis fork config: `docker exec besu-validator cat /opt/besu/genesis.json | grep -E "berlinBlock|londonBlock|shanghaiTime"`
+- Compare genesis hash with network:
+  ```bash
+  # Your node
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x0",false],"id":1}' \
+    http://localhost:8545 | jq -r '.result.hash'
+
+  # Network (should match exactly)
+  curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x0",false],"id":1}' \
+    http://EXISTING_NODE:8545 | jq -r '.result.hash'
+  ```
+- If hashes don't match: Obtain correct genesis from network, wipe data, redeploy
 
 **Node stays at block 0:**
 - Verify genesis hash matches: check logs for genesis hash, compare with existing nodes
