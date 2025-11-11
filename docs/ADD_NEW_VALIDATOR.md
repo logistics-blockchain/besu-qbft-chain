@@ -143,10 +143,10 @@ Wait 15-20 seconds for peer discovery, then check:
 
 ```bash
 # Check peer count (should equal number of existing nodes)
-curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' http://localhost:8545
+curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' http://NEW_NODE_IP:8545
 
 # Check block number (should match network)
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://localhost:8545
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://NEW_NODE_IP:8545
 ```
 
 The node is now synced but **not yet a validator**.
@@ -165,7 +165,7 @@ cast send 0x0000000000000000000000000000000000009999 \
   "Organization Name" \
   "contact@email.com" \
   --private-key NEW_NODE_PRIVATE_KEY \
-  --rpc-url http://localhost:8545 \
+  --rpc-url http://NEW_NODE_IP:8545 \
   --gas-price 0 \
   --legacy
 ```
@@ -210,7 +210,7 @@ Confirm the new validator is active:
 ```bash
 cast call 0x0000000000000000000000000000000000009999 \
   "getValidators()" \
-  --rpc-url http://localhost:8545
+  --rpc-url http://NEW_NODE_IP:8545
 ```
 
 The new validator address should appear in the returned array.
@@ -224,13 +224,13 @@ The new validator address should appear in the returned array.
 - Check genesis fork config: `docker exec besu-validator cat /opt/besu/genesis.json | grep -E "berlinBlock|londonBlock|shanghaiTime"`
 - Compare genesis hash with network:
   ```bash
-  # Your node
+  # Your new node
   curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x0",false],"id":1}' \
-    http://localhost:8545 | jq -r '.result.hash'
+    http://NEW_NODE_IP:8545 | jq -r '.result.hash'
 
-  # Network (should match exactly)
+  # Existing network node (should match exactly)
   curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x0",false],"id":1}' \
-    http://EXISTING_NODE:8545 | jq -r '.result.hash'
+    http://EXISTING_NODE_IP:8545 | jq -r '.result.hash'
   ```
 - If hashes don't match: Obtain correct genesis from network, wipe data, redeploy
 

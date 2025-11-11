@@ -217,17 +217,29 @@ ssh user@host "docker logs besu-rpc -f"
 
 **Peer Count:**
 ```bash
+# Local deployment
 curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' http://localhost:8545
+
+# Remote deployment
+curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' http://NODE_IP:8545
 ```
 
 **Block Number:**
 ```bash
+# Local deployment
 curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://localhost:8545
+
+# Remote deployment
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://NODE_IP:8545
 ```
 
 **Query Validators:**
 ```bash
+# Local deployment
 cast call 0x0000000000000000000000000000000000009999 "getValidators()" --rpc-url http://localhost:8545
+
+# Remote deployment
+cast call 0x0000000000000000000000000000000000009999 "getValidators()" --rpc-url http://NODE_IP:8545
 ```
 
 ## Validator Contract
