@@ -1,14 +1,39 @@
-# Adding a New Validator to Existing Blockchain
+# Joining an Existing Network
 
-Guide for adding a validator node to a running blockchain network.
+Complete guide for joining a running Besu QBFT blockchain network as a validator.
+
+---
 
 ## Prerequisites
 
-- Genesis file from existing network (must match exactly)
-- Access to existing network admin account
+**Request from network operator:**
+- `genesis.json` - Network genesis configuration
+- `static-nodes-template.json` - Existing validator enode URLs
+- `DynamicMultiSigValidatorManager.json` - Contract ABI
+- Block 0 hash for verification
+- RPC endpoint for testing
+
+**Your infrastructure:**
 - Target server meeting hardware requirements (4GB RAM, 50GB storage)
+- SSH access (for remote deployment)
 
 **IMPORTANT:** Your genesis file must match the network's configuration exactly, including fork settings. Mismatched genesis configurations (especially fork versions like Berlin vs London vs Shanghai) will cause transaction failures and sync issues.
+
+## Step 0: Verify Genesis File
+
+**Your node WILL FAIL if genesis doesn't match the network.**
+
+Verify before deploying:
+
+```bash
+# Get network genesis hash from existing node
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["0x0",false],"id":1}' \
+  http://EXISTING_NODE_IP:8545 | jq -r '.result.hash'
+
+# Save this hash - you'll compare it with your local genesis after obtaining it
+```
+
+If hashes don't match after you get genesis: Request correct genesis from network operator and start over.
 
 ## Step 1: Get Genesis File
 
@@ -20,6 +45,17 @@ scp ubuntu@EXISTING_NODE_IP:/opt/besu/genesis.json ./genesis.json
 
 # Or from local deployment
 cp /path/to/besuchain/artifacts/genesis.json ./genesis.json
+```
+
+**Verify genesis hash matches network:**
+
+```bash
+# Calculate hash from your genesis file using existing node
+curl -X POST --data "{\"jsonrpc\":\"2.0\",\"method\":\"debug_storageRangeAt\",\"params\":[\"0x0\",0,\"0x0\",null,1],\"id\":1}" \
+  http://EXISTING_NODE_IP:8545
+
+# Simpler: Deploy test node, get block 0 hash, compare with network hash from Step 0
+# Or ask network operator to confirm your genesis hash matches
 ```
 
 ## Step 2: Generate Node Key
@@ -103,6 +139,32 @@ volumes:
 docker-compose up -d
 ```
 
+## Step 3.5: Configure Firewall
+
+**Open required ports:**
+
+```bash
+# Ubuntu (ufw)
+sudo ufw allow 8545/tcp
+sudo ufw allow 30303/tcp
+sudo ufw allow 30303/udp
+sudo ufw reload
+
+# Cloud providers (Oracle Cloud, AWS, GCP, Azure):
+# Update Security Group/Security List in cloud console
+# - Allow TCP port 8545 (RPC access)
+# - Allow TCP port 30303 (P2P)
+# - Allow UDP port 30303 (P2P discovery)
+```
+
+**Verify ports are accessible:**
+
+```bash
+# From another machine, test connectivity
+nc -zv YOUR_NODE_IP 8545
+nc -zv YOUR_NODE_IP 30303
+```
+
 ## Step 4: Configure Peer Discovery
 
 **Get new node's enode:**
@@ -118,90 +180,192 @@ enode://PUBLIC_KEY@NEW_NODE_IP:30303
 
 **Add existing network peers to new node:**
 
-Get enodes from existing nodes, then create static-nodes.json:
+Use the `static-nodes-template.json` file provided by network operator:
 
 ```bash
-cat > static-nodes.json <<EOF
-[
-  "enode://EXISTING_NODE1_PUBKEY@IP1:30303",
-  "enode://EXISTING_NODE2_PUBKEY@IP2:30303",
-  "enode://EXISTING_NODE3_PUBKEY@IP3:30303"
-]
-EOF
+# Copy the template to static-nodes.json
+cp static-nodes-template.json static-nodes.json
 
+# Deploy to container
 docker cp static-nodes.json besu-validator:/data/
 docker-compose restart
 ```
 
-**Add new node to existing network:**
+Example format (get actual file from operator):
+```json
+[
+  "enode://PUBKEY1@IP1:30303",
+  "enode://PUBKEY2@IP2:30303",
+  "enode://PUBKEY3@IP3:30303",
+  "enode://PUBKEY4@IP4:30303"
+]
+```
 
-On each existing node, add the new node's enode to their static-nodes.json and restart.
+**Add new node to existing network (recommended for production):**
+
+For stable bidirectional connections, have the network operator add your enode to existing nodes' static-nodes.json and restart them.
+
+**Two-way coordination (recommended):**
+
+- **You do:** Configure your static-nodes.json with existing nodes' enodes (steps above)
+- **Network operator does:** Add your enode to existing nodes' static-nodes.json and restart them
+
+**Why bidirectional?** Ensures both sides actively maintain connection. Without it, connection might work but be less stable.
+
+**Can it work without operator adding your enode?** Yes. Discovery is enabled by default in this network. Your node connects → existing nodes accept inbound connection. However, for production networks, bidirectional static nodes are recommended for guaranteed reconnection and more stable connections.
+
+**Testing/development shortcut:** If coordinating with operator is difficult, you can proceed without them adding your enode. Monitor peer count - if you see expected peers (total_nodes - 1), network is working.
+
+**Communication template for network operator:**
+
+```
+Subject: New Node Peer Configuration
+
+My enode: enode://YOUR_PUBKEY@YOUR_IP:30303
+
+Please add to existing nodes' static-nodes.json files and restart nodes.
+```
 
 ## Step 5: Verify Synchronization
 
 Wait 15-20 seconds for peer discovery, then check:
 
 ```bash
-# Check peer count (should equal number of existing nodes)
+# Check peer count (should be total_nodes - 1)
+# Example: 4 node network = 3 peers
 curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' http://NEW_NODE_IP:8545
 
 # Check block number (should match network)
 curl -X POST --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://NEW_NODE_IP:8545
 ```
 
+**Expected peer count:** (Total nodes - 1). If peer count is 0, check firewall and verify operator added your enode.
+
 The node is now synced but **not yet a validator**.
 
-## Step 6: Approve as Validator
+## Transaction Type Warning
+
+**Berlin fork (pre-EIP-1559) requires legacy transactions.**
+
+All `cast send` commands in the following steps MUST include `--legacy` flag.
+
+**Without `--legacy`:** "Max priority fee per gas exceeds max fee per gas" error
+
+## Step 6: Get Validator Approval
 
 The new validator must be approved through the validator contract governance process.
 
-**Apply to be validator (from new validator address):**
+Choose the path that applies to your situation:
 
-Using cast or web interface, call on validator contract at `0x0000000000000000000000000000000000009999`:
+---
+
+### Path A: You Are An Admin
+
+If you control admin keys, you can create and sign proposals yourself.
+
+**6a. Apply to be validator:**
 
 ```bash
 cast send 0x0000000000000000000000000000000000009999 \
   "applyToBeValidator(string,string)" \
-  "Organization Name" \
-  "contact@email.com" \
-  --private-key NEW_NODE_PRIVATE_KEY \
-  --rpc-url http://NEW_NODE_IP:8545 \
+  "Your Organization" \
+  "contact@yourdomain.com" \
+  --private-key YOUR_NODE_PRIVATE_KEY \
+  --rpc-url http://YOUR_NODE_IP:8545 \
   --gas-price 0 \
   --legacy
 ```
 
-**Admin proposes approval:**
-
-An existing admin must propose the validator for approval:
+**6b. Propose your own approval (using admin key):**
 
 ```bash
 cast send 0x0000000000000000000000000000000000009999 \
   "proposeApproval(address,string)" \
-  NEW_VALIDATOR_ADDRESS \
-  "Approval reason" \
-  --private-key ADMIN_PRIVATE_KEY \
-  --rpc-url http://EXISTING_NODE:8545 \
+  YOUR_VALIDATOR_ADDRESS \
+  "Self approval" \
+  --private-key YOUR_ADMIN_PRIVATE_KEY \
+  --rpc-url http://YOUR_NODE_IP:8545 \
   --gas-price 0 \
   --legacy
 ```
 
-**Other admins sign the proposal:**
-
-Get the proposal ID from the transaction receipt, then other admins sign:
+**6c. Get proposal ID and have other admins sign:**
 
 ```bash
+# Get proposal ID
+PROPOSAL_COUNT=$(cast call 0x0000000000000000000000000000000000009999 \
+  "validatorProposalCount()" --rpc-url http://YOUR_NODE_IP:8545)
+# Latest proposal ID = (PROPOSAL_COUNT - 1)
+# Example: 0x3 = 3 decimal, latest proposal ID = 2
+
+# Other admins sign (if multi-sig required)
 cast send 0x0000000000000000000000000000000000009999 \
   "signValidatorProposal(uint256)" \
   PROPOSAL_ID \
-  --private-key ADMIN_PRIVATE_KEY \
-  --rpc-url http://EXISTING_NODE:8545 \
+  --private-key OTHER_ADMIN_PRIVATE_KEY \
+  --rpc-url http://NODE_IP:8545 \
   --gas-price 0 \
   --legacy
 ```
 
-**Automatic execution:**
+**6d. Automatic execution:**
 
-When threshold is reached (majority of admins), the proposal executes automatically and the new validator is added to the validator set. Besu reads the updated validator list and includes the new node in consensus.
+When threshold is reached, proposal executes automatically. Restart your node to begin validating:
+
+```bash
+docker-compose restart
+```
+
+---
+
+### Path B: You Need Admin Approval
+
+If you don't control admin keys, request approval from network operator.
+
+**6a. Apply to be validator:**
+
+```bash
+cast send 0x0000000000000000000000000000000000009999 \
+  "applyToBeValidator(string,string)" \
+  "Your Organization" \
+  "contact@yourdomain.com" \
+  --private-key YOUR_NODE_PRIVATE_KEY \
+  --rpc-url http://YOUR_NODE_IP:8545 \
+  --gas-price 0 \
+  --legacy
+```
+
+**6b. Contact network operator:**
+
+```
+Subject: Validator Approval Request
+
+Validator Address: 0xYOUR_ADDRESS
+Organization: Your Organization Name
+Contact Email: contact@yourdomain.com
+Enode: enode://YOUR_PUBKEY@YOUR_IP:30303
+
+Please propose and approve my validator application.
+```
+
+**6c. Monitor approval status:**
+
+```bash
+# Check if you're in validator set
+cast call 0x0000000000000000000000000000000000009999 \
+  "getValidators()" \
+  --rpc-url http://YOUR_NODE_IP:8545 | grep -i YOUR_ADDRESS
+
+# Or use validator frontend UI to monitor pending proposals
+```
+
+**6d. After approval, restart node:**
+
+Once approved (you'll see your address in validator set), restart to begin validating:
+
+```bash
+docker-compose restart
+```
 
 ## Verification
 

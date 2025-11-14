@@ -1,8 +1,12 @@
 # Blockchain Deployment Guide
 
+**Joining existing network?** See [ADD_NEW_VALIDATOR.md](ADD_NEW_VALIDATOR.md) instead.
+
+---
+
 ## Overview
 
-This guide covers deployment to local and remote environments.
+This guide covers deploying a NEW network to local and remote environments.
 
 ## Architecture
 
@@ -15,17 +19,45 @@ This guide covers deployment to local and remote environments.
 
 ## Prerequisites
 
-### Hardware Requirements
-- RAM: 4GB minimum
+### Hardware Requirements Per Node
+- Validator node: 512MB RAM minimum
+- RPC node: 1GB RAM minimum
+- Total: 4GB recommended (includes OS and Docker overhead)
 - Storage: 50GB minimum, grows with chain history
 
-### Local Requirements
-- Docker and Docker Compose
-- Node.js 18+
-- jq (JSON processor)
-- openssl
+### Software Installation
 
-### Remote Requirements
+**macOS:**
+```bash
+# Core tools
+brew install jq openssl docker docker-compose node
+
+# Foundry (cast, forge)
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+**Ubuntu/Debian:**
+```bash
+# Core tools
+sudo apt update
+sudo apt install -y jq openssl docker.io docker-compose nodejs npm
+
+# Foundry (cast, forge)
+curl -L https://foundry.paradigm.xyz | bash
+source ~/.bashrc
+foundryup
+```
+
+**Verify installation:**
+```bash
+node --version    # Should be 18+
+docker --version
+jq --version
+cast --version
+```
+
+### Remote Deployment Requirements
 - Ubuntu 22.04+ servers with Docker installed
 - SSH access with key authentication
 - Minimum 50GB storage per node

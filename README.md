@@ -12,7 +12,7 @@ Private blockchain network using Hyperledger Besu with QBFT consensus and contra
 
 ## Architecture
 
-- Chain ID: 10001
+- Chain ID: 10002
 - Block Time: 5 seconds
 - EVM Version: Berlin
 - Validator Contract: `0x0000000000000000000000000000000000009999`
@@ -28,7 +28,13 @@ Private blockchain network using Hyperledger Besu with QBFT consensus and contra
 
 ## Documentation
 
-See docs folder for deployment guides.
+**Getting Started:**
+- [Joining an Existing Network](docs/ADD_NEW_VALIDATOR.md) - Join a running network as validator
+- [FAQ](docs/FAQ.md) - Quick answers to common questions
+
+**Deployment:**
+- [Blockchain Deployment Guide](docs/BLOCKCHAIN_DEPLOYMENT.md) - Deploy new network from scratch
+- [Deploy Smart Contracts](docs/DEPLOY_SMART_CONTRACTS.md) - Contract deployment guide
 
 ## References
 
