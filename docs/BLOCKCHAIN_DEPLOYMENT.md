@@ -325,7 +325,7 @@ docker logs besu-<node-name>
 ```
 
 **Common issues:**
-- Invalid node key format (must be raw hex without 0x prefix)
+- Invalid node key format (must be raw hex)
 - Port already in use
 - Insufficient memory (validators need 512MB, RPC nodes need 1GB)
 
