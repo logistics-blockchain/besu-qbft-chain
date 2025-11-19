@@ -30,7 +30,6 @@ Private blockchain network using Hyperledger Besu with QBFT consensus and contra
 
 **Getting Started:**
 - [Joining an Existing Network](docs/ADD_NEW_VALIDATOR.md) - Join a running network as validator
-- [FAQ](docs/FAQ.md) - Quick answers to common questions
 
 **Deployment:**
 - [Blockchain Deployment Guide](docs/BLOCKCHAIN_DEPLOYMENT.md) - Deploy new network from scratch
